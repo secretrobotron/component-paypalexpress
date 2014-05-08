@@ -45,6 +45,7 @@
         document.querySelector('#submit-button').onclick = function () {
           document.querySelector('ceci-paypal-express').submit();
         };
+        document.querySelector('ceci-paypal-express').setAttribute('paymentproxy', window.location.protocol + '//' + window.location.host);
       </script>
     </body>
 </html>
