@@ -27,7 +27,7 @@ app.post('/pay/:experience/:call', function (req, res) {
     paypal_classic_sdk.execute(trx.getParameters(), function (err, data) {
       var response;
       if (err) {
-        if (err.code != 'ECONNRESET') {
+        if (err.code != 'ECONNRESET' && data) {
           response = {
             submit: data.submit,
             response: data.response,
