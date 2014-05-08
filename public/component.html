@@ -36,12 +36,28 @@
       <img data-mode="start error thanks" src="https://www.paypalobjects.com/en_US/i/btn/btn_xpressCheckout.gif">
       <iframe id="paymentIframe" data-mode="paying" id="iframe" width="400" height="550"></iframe>
     </div>
+    <content></content>
+    <shadow></shadow>
   </template>
   <ceci-definition>
     {
       "name": "PayPal Express",
       "description": "PayPal Express Mobile Payments",
       "broadcasts": {
+        "paymentAccepted": {
+          "label": "Payment Accepted",
+          "description": "Payment was accepted.",
+          "default": "green"
+        },
+        "paymentCanceled": {
+          "label": "Payment Canceled",
+          "description": "Payment was canceled by the user.",
+          "default": "red"
+        },
+        "paymentError": {
+          "label": "Payment Error",
+          "description": "There was an error processing the payment."
+        }
       },
       "listeners": {
       },
@@ -68,6 +84,7 @@
           SOLUTIONTYPE: 'Sole',
           METHOD: 'SetExpressCheckout'
         };
+        this.super();
       },
       _hashCheckInterval: -1,
       startHashCheck: function (callback) {
@@ -91,7 +108,7 @@
         var match = window.location.hash.match(/#paypal(return|cancel)[^\w]/);
         if (match) {
           window.location.hash = window.location.hash.substring(0, match.index) +
-            window.location.hash.substring(match.index + match.length + 1);
+            window.location.hash.substring(match.index + match[0].length);
         }
       },
       setViewMode: function (mode) {
@@ -99,10 +116,12 @@
       },
       onPaymentReturn: function () {
         this.setViewMode('thanks');
+        this.broadcast('paymentAccepted');
       },
       onPaymentCancel: function () {
         this.errorMessage = 'Payment was canceled.'
         this.setViewMode('error');
+        this.broadcast('paymentCanceled');
       },
       submit: function () {
         var that = this;

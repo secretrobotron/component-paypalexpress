@@ -4,11 +4,25 @@
     <script src="https://apps.webmaker.org/javascripts/requireConfig.js"></script>
     <script>requirejs.config({ baseUrl: 'https://apps.webmaker.org/javascripts' });</script>
     <script src="https://apps.webmaker.org/vendor/platform/platform.js"></script>
-    <link rel="import" href="https://apps.webmaker.org/vendor/polymer/polymer.html"></script>
-    <link rel="import" href="https://apps.webmaker.org/ceci/ceci-definition.html"></script>
-    <link rel="import" href="https://apps.webmaker.org/ceci/ceci-element-base.html"></script>
-    <link rel="import" href="https://apps.webmaker.org/ceci/ceci-element.html"></script>
-    <link rel="import" href="component.html"></script>
+    <link rel="import" href="https://apps.webmaker.org/vendor/polymer/polymer.html">
+    <link rel="import" href="https://apps.webmaker.org/ceci/ceci-definition.html">
+    <link rel="import" href="https://apps.webmaker.org/ceci/ceci-listen.html">
+    <link rel="import" href="https://apps.webmaker.org/ceci/ceci-broadcast.html">
+    <link rel="import" href="https://apps.webmaker.org/ceci/ceci-element-base.html">
+    <script>
+      // Wait for require to finish before adding ceci-dependent elements
+      require(['l10n'], function () {
+        [
+          'https://apps.webmaker.org/ceci/ceci-element.html',
+          'component.html'
+        ].forEach(function (url) {
+          var link = document.createElement('link');
+          link.rel = 'import';
+          link.href = url;
+          document.head.appendChild(link);
+        });
+      });
+    </script>
     <style>
       html, body {
         width: 400px;
@@ -42,10 +56,24 @@
       <ceci-paypal-express></ceci-paypal-express>
       <button id="submit-button" data-mode="start error thanks">Submit Donation for $10</button>
       <script>
-        document.querySelector('#submit-button').onclick = function () {
-          document.querySelector('ceci-paypal-express').submit();
-        };
-        document.querySelector('ceci-paypal-express').setAttribute('paymentproxy', window.location.protocol + '//' + window.location.host);
+        (function () {
+          // A bunch of ceci and app setup...
+          var paypalComponent = document.querySelector('ceci-paypal-express');
+          var submitButton = document.querySelector('#submit-button');
+          submitButton.onclick = function () {
+            paypalComponent.submit();
+            this.hidden = true;
+          };
+          document.addEventListener('CeciElementAdded', function () {
+            paypalComponent.async(function () {
+              paypalComponent.applyDefaults();
+            });
+          });
+          paypalComponent.setAttribute('paymentproxy', window.location.protocol + '//' + window.location.host);
+          document.addEventListener('green', function () {
+            submitButton.hidden = false;
+          });
+        })();
       </script>
     </body>
 </html>
