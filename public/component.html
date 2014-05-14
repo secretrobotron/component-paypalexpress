@@ -1,4 +1,4 @@
-<polymer-element name="ceci-paypal-express" extends="ceci-element" attributes="amount currency paymentproxy checkouturl">
+<polymer-element name="ceci-paypal-express" extends="ceci-element" attributes="amount currency readonly paymentproxy checkouturl">
   <template>
     <style>
       :host {
@@ -31,6 +31,7 @@
         border: 0;
         padding: 0;
         margin: 0;
+        height: 400px;
       }
 
       :host #errorMessage {
@@ -56,15 +57,16 @@
       <div data-mode="loading">Connecting to PayPal...</div>
       <div data-mode="thanks">Thank you for your contribution!</div>
       <div data-mode="ready error">
-        Current Donation Amount: <input id="paymentAmount" type="number" value="{{amount}}">
-        <select value="{{currency}}">
+        Current Donation Amount: <input id="paymentAmount" type="number" value="{{amount}}" readonly?="{{readonly == 'true'}}">
+        <select value="{{currency}}" hidden?="{{readonly == 'true'}}">
           <template repeat="{{c in _currencyCodes}}">
             <option value="{{c}}">{{c}}</option>
           </template>
         </select>
+        <span hidden?="{{readonly == 'false'}}">{{currency}}</span>
       </div>
       <img data-mode="ready error thanks" src="https://www.paypalobjects.com/webstatic/checkout/hermes/logo.png">
-      <iframe id="paymentIframe" data-mode="paying" id="iframe" width="400" height="550"></iframe>
+      <iframe id="paymentIframe" data-mode="paying" width="400" height="550"></iframe>
     </div>
     <content></content>
     <shadow></shadow>
@@ -77,13 +79,32 @@
         "currency": {
           "description": "Currency code for donation.",
           "label": "Currency Code",
-          "editable": "text"
+          "editable": "text",
+          "listener": true
         },
         "amount": {
           "description": "Amount to donate.",
           "label": "Amount",
           "editable": "number",
-          "min" : 1
+          "min" : 1,
+          "listener": true
+        },
+        "readonly": {
+          "description": "Disables ability to edit donation and currency in component UI.",
+          "label": "Read-Only",
+          "editable": "boolean"
+        },
+        "paymentproxy" : {
+          "description": "(Advanced) PayPal SDK Proxy URL.",
+          "label": "Payment Proxy",
+          "editable": "text"
+        }
+      },
+      "listeners": {
+        "submit": {
+          "label": "Submit",
+          "description": "Starts PayPal donation submission.",
+          "default": "orange"
         }
       },
       "broadcasts": {
@@ -154,6 +175,7 @@
       checkouturl: 'https://www.sandbox.paypal.com/checkoutnow',
       amount: 10,
       currency: 'USD',
+      readonly: 'false',
       ready: function () {
         this._proxyParams = {
           PAYMENTREQUEST_0_AMT: '10',
