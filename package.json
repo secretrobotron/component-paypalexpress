@@ -4,15 +4,14 @@
   "description": "",
   "author": "Secret Robotron <secretrobotron@gmail.com>",
   "main": "app.js",
-  "scripts": {
-  },
+  "scripts": {},
   "engines": {
     "node": ">=0.10.0"
   },
   "dependencies": {
     "express": "~3.4.4",
-    "paypal-payflow-sdk": "git://github.com/trainerbill/paypal-classic-sdk.git#master"
+    "paypal-payflow-sdk": "git://github.com/trainerbill/paypal-classic-sdk.git#master",
+    "cors": "^2.3.1"
   },
-  "devDependencies": {
-  }
+  "devDependencies": {}
 }
