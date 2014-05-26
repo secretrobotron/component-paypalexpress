@@ -4,7 +4,6 @@ var cors = require('cors');
 var app = express();
 
 app.use(cors());
-app.use(express.static(__dirname + '/public'));
 app.use(express.bodyParser());
 
 paypal_classic_sdk.configure({
@@ -59,6 +58,10 @@ app.post('/pay/:experience/:call', function (req, res) {
       error: err.message
     });
   }
+});
+
+app.get('/component.html', function (req, res) {
+  res.sendfile(__dirname + '/component.html');
 });
 
 console.log('Listening on port', process.env.PORT);
